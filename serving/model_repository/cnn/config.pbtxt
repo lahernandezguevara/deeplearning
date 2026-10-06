@@ -1,0 +1,31 @@
+# Archivo de ocnfiguracion exclusivo para triton, 
+# tamanio de batch para la cola dinamica que tenemos
+# Todas las peticiones hasta maximo 5 segundos las junta y las procesaa
+# yo tengo que tener cierta latencia para mejorarr el desempenio de
+# mi hardware
+# El servidor de inferencia hace muchas cosaas en automatico
+name: "cnn"
+
+backend: "onnxruntime"
+
+# Limitamos nuestro servidor de inferencia con un maximo
+max_batch_size: 32
+
+dynamic_batching{
+    max_queue_delay_microseconts: 5000
+}
+
+# Quantizacion, flotantes de 16 bits
+input [{
+    name: "input"
+    data_type: TYPE_FP32
+    dims: [3, 224, 224]
+}]
+
+output [{
+    name: "output"
+    data_type: TYPE_FP32
+    # Cambia -1 por el número real de clases (X) de tu dataset, 
+    # o déjalo en -1 si deseas que Triton acepte salidas de tamaño variable.
+    dims: [ -1 ]
+}]

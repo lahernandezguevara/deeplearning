@@ -1,0 +1,26 @@
+services:
+  triton:
+    image: nvcr.io/nvidia/tritonserver:26.08-py3
+    
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    
+    volumes:
+      # Va a montar en la carpeta de models dentro de mi contenedor
+      - ./serving/model_repository:/models
+
+    command:
+      - tritonserver
+      - --model-repository=/models
+      - --model-control-mode=poll
+      - --model-control-mode=explicit
+      # ESTO SE USA EN PRODUCCION (Solo cuando yo le digo)
+      # Escanea model direcotry cada 15 segundos, si en ese escaneo encuentra un model llamado 2
+      # hace un hot-swap
+      # Es malo usar poll porque podriamos generar condiciones de carrera
+      # - --repository-poll-secs=15
+
+
+      # En nuestra casa cuando termina

@@ -1,0 +1,4 @@
+tritonclient[http]
+kagglehub
+gradio
+Pillow
