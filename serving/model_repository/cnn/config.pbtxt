@@ -12,7 +12,7 @@ backend: "onnxruntime"
 max_batch_size: 32
 
 dynamic_batching{
-    max_queue_delay_microseconts: 5000
+    max_queue_delay_microseconds: 5000
 }
 
 # Quantizacion, flotantes de 16 bits
@@ -27,5 +27,5 @@ output [{
     data_type: TYPE_FP32
     # Cambia -1 por el número real de clases (X) de tu dataset, 
     # o déjalo en -1 si deseas que Triton acepte salidas de tamaño variable.
-    dims: [ -1 ]
+    dims: [ 2 ]
 }]

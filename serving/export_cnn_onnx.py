@@ -10,12 +10,12 @@ from models.factory import create_model
 # ====================================================
 def main() -> None:
     # Cambia num_classes por el número de clases X de tu dataset nuevo
-    num_classes = 10
+    num_classes = 2
     model = create_model("vgg11", num_classes=num_classes)
 
     # Estado interno del modelo
     state_dict = torch.load(
-        '/home/edgar/Dev/uni/university-7th-semester/deep_learning/project1/artifacts/best_model.tbh',
+        'artifacts/best_model.tbh',
         map_location = 'cpu',
         weights_only=True,
     )
@@ -32,27 +32,22 @@ def main() -> None:
     )
 
     # Exportando modelo a onnx (formato libre de nn)
-    onnx_program = torch.onnx.export(
+    torch.onnx.export(
         model,
-        (dummy_input,),
+        dummy_input,
+        'serving/model_repository/cnn/1/model.onnx',
         input_names=['input'],
         output_names=['output'],
-        dynamic_shapes={
-            "x": {0: "batch_size"},
-        },
-        # torch export utilice un exportador moderno que utilice el rafo interno del modelo y lo exporta usando
-        # un batch dinamico
-        # Un servidor de inferencia tiene que ser capaz de implementar un batch con el unico limite que
-        # sea la memoria de mi servidor
-        dynamo=True
+        dynamic_axes={
+            "input": {0: "batch_size"},
+            "output": {0: "batch_size"}
+        }
     )
 
-    onnx_program.save(
-        '/home/edgar/Dev/uni/university-7th-semester/deep_learning/project1/serving/model_repository/cnn/1/model.onnx'
-    )
+
 
     onnx_model = onnx.load(
-        '/home/edgar/Dev/uni/university-7th-semester/deep_learning/project1/serving/model_repository/cnn/1/model.onnx'
+        'serving/model_repository/cnn/1/model.onnx'
     )
 # =================================================================================================
     ## Validar que el modelo guardado este bien
@@ -63,7 +58,7 @@ def main() -> None:
 
     # onnxruntime para poder ejecutar el modelo
     session = ort.InferenceSession(
-        '/home/edgar/Dev/uni/university-7th-semester/deep_learning/project1/serving/model_repository/cnn/1/model.onnx',
+        'serving/model_repository/cnn/1/model.onnx',
         # Forzando a ejecutar con cpu
         providers=['CPUExecutionProvider']
     )

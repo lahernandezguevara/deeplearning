@@ -101,10 +101,14 @@ def predict(image):
         # Procesamiento de la salida
         logits = response.as_numpy("output")[0]
         predicted_class_idx = np.argmax(logits)
+        if predicted_class_idx == 0:
+            clase = "gato"
+        else:
+            clase = "perro"
         prob = np.max(logits)
         
         latency_str = f"{infer_time_ms:.2f} ms"
-        result_text = f"Clase Predicha: {predicted_class_idx}\nConfianza: {prob:.4f}"
+        result_text = f"Clase Predicha: {clase}\nConfianza: {prob:.4f}"
         
         # Actualizar Historial
         prediction_history.insert(0, f"Clase {predicted_class_idx} (Conf: {prob:.2f}) | {latency_str}")
@@ -128,7 +132,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         # Lado Izquierdo: Modelo y Predicción
         with gr.Column(scale=1):
             gr.Markdown("### 📸 Clasificación de Imágenes")
-            image_input = gr.Image(type="pil", label="Sube tu imagen aquí")
+            image_input = gr.Image(type="pil", label="Sube tu imagen aquí", sources=["upload"])
             submit_btn = gr.Button("Predecir Imagen", variant="primary")
             text_output = gr.Textbox(label="Resultado Predictivo")
             latency_out = gr.Textbox(label="⏱️ Latencia Exacta de Inferencia")

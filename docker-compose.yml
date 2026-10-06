@@ -15,7 +15,6 @@ services:
       - tritonserver
       - --model-repository=/models
       - --model-control-mode=poll
-      - --model-control-mode=explicit
       # ESTO SE USA EN PRODUCCION (Solo cuando yo le digo)
       # Escanea model direcotry cada 15 segundos, si en ese escaneo encuentra un model llamado 2
       # hace un hot-swap
